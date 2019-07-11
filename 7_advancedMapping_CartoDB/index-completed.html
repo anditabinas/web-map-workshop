@@ -42,28 +42,22 @@
     <script>
     // Create Leaflet map object
     var map = L.map('map',{ center: [42.381899, -71.122499], zoom: 13});
-
     // Add Tile Layer basemap
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       minZoom: 2,
       maxZoom: 18
     }).addTo(map);
-
     // Declare Variables
     // Create Global Variable to hold CartoDB points
     var cartoDBPoints = null;
-
     // Set your CartoDB Username
-    var cartoDBUsername = "anditabinas";
-
+    var cartoDBUsername = "mjfoster83";
     // Write SQL Selection Query to be Used on CartoDB Table
     // Name of table is 'data_collector'
-    var sqlQuery = "SELECT * FROM mhacrowdsourcing_p";
-
+    var sqlQuery = "SELECT * FROM data_collector";
     // Create variable for Leaflet.draw features
     var drawnItems = new L.FeatureGroup();
-
     // Get CartoDB selection as GeoJSON and Add to Map
     function getGeoJSON(){
       $.getJSON("https://"+cartoDBUsername+".cartodb.com/api/v2/sql?format=GeoJSON&q="+sqlQuery, function(data) {
@@ -76,12 +70,10 @@
         }).addTo(map);
       });
     };
-
     // Run showAll function automatically when document loads
     $( document ).ready(function() {
       getGeoJSON();
     });
-
     var drawControl = new L.Control.Draw({
       draw : {
         polygon : false,
@@ -92,9 +84,7 @@
       edit : false,
       remove: false
     });
-
     var controlOnMap = false;
-
     function startEdits(){
       if(controlOnMap == true){
         map.removeControl(drawControl);
@@ -103,21 +93,16 @@
       map.addControl(drawControl);
       controlOnMap = true;
     };
-
     function stopEdits(){
       map.removeControl(drawControl);
       controlOnMap = false;
     };
-
     map.on('draw:created', function (e) {
         var layer = e.layer;
-
         map.addLayer(drawnItems);
         drawnItems.addLayer(layer);
-
         dialog.dialog( "open" );
     });
-
     var submitToProxy = function(q){
       $.post("php/callProxy.php", { //Put path to your PHP file here
         qurl:q,
@@ -128,7 +113,6 @@
         refreshLayer();
       });
     };
-
     dialog = $( "#dialog" ).dialog({
       autoOpen: false,
       height: 300,
@@ -151,7 +135,6 @@
         console.log("Dialog closed");
       }
     });
-
     form = dialog.find( "form" ).on( "submit", function( event ) {
       event.preventDefault();
       setData();
@@ -175,7 +158,6 @@
       console.log("drawnItems has been cleared");
       dialog.dialog("close");
     };
-
     function refreshLayer() {
       if (map.hasLayer(cartoDBPoints)) {
         map.removeLayer(cartoDBPoints);
